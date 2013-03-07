@@ -1,0 +1,8 @@
+(* To compile modules, paste the following into the Moscow ML toplevel prompt: *) 
+
+use "CompileModules.sml";
+rebuild();
+
+(* There are examples in exampleA.sml and exampleB.sml, to run them, type e.g. *)
+
+use "exampleA.sml";
