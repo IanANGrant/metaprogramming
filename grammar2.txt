@@ -1,0 +1,62 @@
+TOP:exp <- EXP ?optws? ';'
+
+EXP:exp <- BIND | COMB
+
+COMB:exp <- COMBEXP
+          | [es=COMBEXP ?ws? e=BIND]          ={comb es e}
+
+COMBEXP:exp <- SYM
+             | [es=COMBEXP ?ws? e=SYM]        ={comb es e}
+
+SYM:exp <- [s=?var?]                          ={var s}
+         | [<⌜> v=?var? <⌝>]                  ={meta v}
+         | <(> EXP <)>
+         | [t=ATYPE]                          ={atype t}
+         | [<⟪> r=REPR <⟫>]                   ={repr r}
+         | [<⟦> r=EXP <⟧>]                    ={embedded r}
+         | [<｟> m=META <｠>]                   ={nomial m}
+
+REPR:rep <- [e=EXP]                           ={exp e}
+          | ['Ω']                             ={thing}
+
+META:meta <- NOMIAL
+           | [ns=META ?ws? n=NOMIAL]          ={cons ns n}
+
+NOMIAL:nomial <- [s=NAME]                     ={name s}
+               | <(> META <)>
+
+NAME:name <- [g=?var?]                        ={genus g}
+           | [g=?var? '.' s=NAME]             ={species g s}
+
+BIND:exp <- LAMBDABIND | UBIND
+
+LAMBDABIND:exp <- [<λ> e=LAMBDA]              ={bindexp e}
+
+LAMBDA:bind <- [v=VAR <.> e=LAMBDABODY]       ={abs v e}
+             | [v=VAR <.> e=LAMBDABIND]       ={abs v e}
+
+LAMBDABODY:exp <- COMB | UBIND
+
+UBIND:exp <- [<Λ> b=UABS]                     ={bindexp b}
+
+UABS:bind <- [v=ATYVAR <.> e=EXP]             ={lambda v e}
+
+ATYVAR:atyvar <- [v=?atyvar?]                 ={var v}
+               | [<⌜> v=?atyvar? <⌝>]         ={meta v}
+
+VAR:pat <- [v=BINDVAR <:> t=ATYPE]            ={bindvar v t}
+
+BINDVAR:bindvar <- [v=?var?]                  ={var v}
+                 | [<⟦> r=EXP <⟧>]            ={embedded r}
+                 | [<⌜> v=?var? <⌝>]          ={meta v}
+
+ATYPE:atype <- AFTYPE
+             | [<Π> v=ATYVAR <.> t=ATYPE]     ={forall v t}
+
+AFTYPE:atype <- ATEXP
+              | [t=ATEXP <→> t'=ATYPE]        ={function t t'}
+
+ATEXP:atype <- [v=?atyvar?]                   ={tyvar v}
+             | [<⌜> v=?atyvar? <⌝>]           ={meta v}
+             | <(> ATYPE <)>
+             | [<⟪> r=ATYPE <⟫>]              ={repr r}

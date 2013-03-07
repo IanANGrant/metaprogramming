@@ -1,0 +1,153 @@
+           h_1 x := x X y_1
+           h_2 x := x X y_1 y_2
+           h_3 x := x X y_1 y_2 y_3
+           h_4 x := x X y_1 y_2 y_3 y_4
+
+         Exp U V W := ΠX.(U→X)→(V→X)→(W→X)→(X→X→X)→X
+               var := λv:U.ΛX.λy_1:U→X.λy_2:V→X.λy_3:W→X.λy_4:X→X→X.y_1 v : U → Exp U V W
+           bindexp := λb:V.ΛX.λy_1:U→X.λy_2:V→X.λy_3:W→X.λy_4:X→X→X.y_2 b : V → Exp U V W
+          atypeexp := λt.W.ΛX.λy_1:U→X.λy_2:V→X.λy_3:W→X.λy_4:X→X→X.y_3 t : W → Exp U V W
+              comb := λe:Exp U V W.λes:Exp U V W.
+                       ΛX.λy_1:U→X.λy_2:V→X.λy_3:W→X.λy_4:X→X→X.y_4 (e X y_1 y_2 y_3 y_4)
+                                                                   (es X y_1 y_2 y_3 y_4)
+                            : Exp U V W → Exp U V W → Exp U V W
+
+         exp x := ΛX.λy_1:U→X.λy_2:V→X.λy_3:W→X.λy_4:X→X→X.x X y_1 y_2 y_3 y_4
+
+               Var := ΛU.ΛV.ΛW.var[U,V,W]:ΠU.ΠV.ΠW.U → Exp U V W
+           Bindexp := ΛU.ΛV.ΛW.bindexp[U,V,W]:ΠU.ΠV.ΠW.V → Exp U V W
+          Atypeexp := ΛU.ΛV.ΛW.atypeexp[U,V,W]:ΠU.ΠV.ΠW.W → Exp U V W
+              Comb := ΛU.ΛV.ΛW.comb[U,V,W]:ΠU.ΠV.ΠW.Exp U V W → Exp U V W → Exp U V W
+
+           Pat U W := ΠX.(U→W→X)→X
+           bindvar := λv:U.λt:W.ΛX.λy_1:U→W→X.y_1 v t
+
+             pat x := ΛX.ΛY.ΛZ.λy_1:X→Y→Z.x Z y_1
+
+           Bindvar := ΛU.ΛW.bindvar[U,W]:ΠU.ΠW.U→W→Pat U W
+
+        Bind U V W := ΠX.(U→W→X)→(V→W→X)→X
+        lambda v e := λv:U.λe:W.ΛX.λy_1:U→W→X.λy_2:V→W→X.y_1 v e
+           abs p e := λp:V.λe:W.ΛX.λy_1:U→W→X.λy_2:V→W→X.y_2 p e
+
+            bind x := ΛW.λy_1:X→Y→W.λy_2:Z→Y→W.x W y_1 y_2:Bind X Y Z
+
+            Lambda := ΛU.ΛV.ΛW.lambda[U,V,W]:ΠU.ΠV.ΠW.U→W→Bind U V W
+               Abs := ΛU.ΛV.ΛW.abs[U,V,W]:ΠU.ΠV.ΠW.V→W→Bind U V W
+
+           Atype U := ΠX.(U→X)→(U→X→X)→(X→X→X)→X
+           tyvar v := λv:U.ΛX.λy_1:U→X.λy2:U→X→X.y_3:X→X→X.y_1 v
+        forall v t := λv:U.λt:Atype U.ΛX.λy_1:U→X.λy2:U→X→X.y_3:X→X→X.y_2 v (t X y_1 y_2 y_3)
+     function t t' := λt:Atype U.λt':Atype U.
+                      ΛX.λy_1:U→X.λy2:U→X→X.y_3:X→X→X.y_3 (t X y_1 y_2 y_3) (t' X y_1 y_2 y_3)
+
+           atype x := ΛX.ΛY.λy_1:X→Y.λy2:X→Y→Y.y_3:Y→Y→Y.x Y y_1 y_2 y_3:ΠX.Atype X
+
+             Tyvar := ΛX.tyvar[X]:ΠX.X→Atype X
+            Forall := ΛX.forall[X]:ΠX.X→Atype X→Atype X
+          Function := ΛX.function[X]:ΠX.Atype X→Atype X→Atype X
+
+             Str U := ΠX.(U→X)→X
+          string s := ΛX.λy_1:U→X.y_1 s
+
+             str x := ΛX.ΛY.λy_1:X→Y.x Y y_1:ΠX.Str X
+
+            String := ΛX.string[X]:ΠX.X→Str X
+
+        Reprrepr U := ΠX.X→(U→U→X)→X
+
+               nil := ΛX.λy_1:X.λy_2:U→U→X.y_1
+          repr u v := ΛX.λy_1:X.λy_2:U→U→X.y_2 u v
+
+        reprrepr x := ΛX.ΛY.λy_1:Y.λy_2:X→X→Y.x Y y_1 y_2 : ΠX.Reprrepr X
+
+               Nil := ΛX.nil[X]:ΠX.Reprrepr X
+              Repr := ΛX.repr[X]:ΠX.Reprrepr X→Reprrepr X→Reprrepr X
+
+          It u v t := t X u v
+              ΣX.V := ΠY.(ΠX.(V→Y))→Y
+              〈U,v〉 := ΛY.λx:ΠX.V→Y.x U v
+        (∇X.x.w) t := t X ΛX.λx:V.w
+
+            ΣNil U := 〈U,Nil U〉 : ΣX.Reprrepr X
+       ΣRepr U u v := 〈U,Repr U u v〉 : ΣX.Reprrepr X
+
+  Repr R S T U V W := ΠX.(R→X)→(S→X)→(T→X)→(U→X)→(V→X)→(W→X)→X
+        repexp x   := ΠX.λy_1:R→X.λy_2:S→X.λy_3:T→X.λy_4:U→X.λy_5:V→X.λy_6:W→X.y_1 x
+        repbind x  := ΠX.λy_1:R→X.λy_2:S→X.λy_3:T→X.λy_4:U→X.λy_5:V→X.λy_6:W→X.y_2 x
+        reppat x   := ΠX.λy_1:R→X.λy_2:S→X.λy_3:T→X.λy_4:U→X.λy_5:V→X.λy_6:W→X.y_3 x
+        repatype x := ΠX.λy_1:R→X.λy_2:S→X.λy_3:T→X.λy_4:U→X.λy_5:V→X.λy_6:W→X.y_4 x
+        repstr x   := ΠX.λy_1:R→X.λy_2:S→X.λy_3:T→X.λy_4:U→X.λy_5:V→X.λy_6:W→X.y_5 x
+        reprepr x  := ΠX.λy_1:R→X.λy_2:S→X.λy_3:T→X.λy_4:U→X.λy_5:V→X.λy_6:W→X.y_6 x
+
+            repr x := ΠX.λy_1:R→X.λy_2:S→X.λy_3:T→X.λy_4:U→X.λy_5:V→X.λy_6:W→X.x X y_1 y_2 y_3 y_4 y_5 y_6
+
+          Repexp   := ΛR.ΛS.ΛT.ΛU.ΛV.ΛW.repexp[R,S,T,U,V,W]:ΠR.ΠS.ΠT.ΠU.ΠV.ΠW.  R→Repr R S T U V W
+          Repbind  := ΛR.ΛS.ΛT.ΛU.ΛV.ΛW.repbind[R,S,T,U,V,W]:ΠR.ΠS.ΠT.ΠU.ΠV.ΠW. S→Repr R S T U V W
+          Reppat   := ΛR.ΛS.ΛT.ΛU.ΛV.ΛW.reppat[R,S,T,U,V,W]:ΠR.ΠS.ΠT.ΠU.ΠV.ΠW.  T→Repr R S T U V W
+          Repatype := ΛR.ΛS.ΛT.ΛU.ΛV.ΛW.repatype[R,S,T,U,V,W]:ΠR.ΠS.ΠT.ΠU.ΠV.ΠW.U→Repr R S T U V W
+          Repstr   := ΛR.ΛS.ΛT.ΛU.ΛV.ΛW.repstr[R,S,T,U,V,W]:ΠR.ΠS.ΠT.ΠU.ΠV.ΠW.  V→Repr R S T U V W
+          Reprepr  := ΛR.ΛS.ΛT.ΛU.ΛV.ΛW.reprepr[R,S,T,U,V,W]:ΠR.ΠS.ΠT.ΠU.ΠV.ΠW. W→Repr R S T U V W
+
+               h x := ΛR.ΛS.ΛT.ΛU.ΛV.ΛW.
+                        repr x (Repr    (Exp V S U) (Bind V T R) (Pat V U) (Atype V) (Str V) (Reprrepr W))
+                               (Repexp  (Exp V S U) (Bind V T R) (Pat V U) (Atype V) (Str V) (Reprrepr W))
+                               (Repbind (Exp V S U) (Bind V T R) (Pat V U) (Atype V) (Str V) (Reprrepr W))
+                               (Reppat  (Exp V S U) (Bind V T R) (Pat V U) (Atype V) (Str V) (Reprrepr W))
+                               (Repatype(Exp V S U) (Bind V T R) (Pat V U) (Atype V) (Str V) (Reprrepr W))
+                               (Repstr  (Exp V S U) (Bind V T R) (Pat V U) (Atype V) (Str V) (Reprrepr W))
+                               (Reprepr (Exp V S U) (Bind V T R) (Pat V U) (Atype V) (Str V) (Reprrepr W))
+             : ΠR.ΠS.ΠT.ΠU.ΠV.ΠW.Repr R S T U V W
+
+                  R S T U V W
+                R   x   x x
+                S x   x   x
+                T       x x
+                U         x
+                V         x
+                W           x
+
+                R = Exp V S U
+                S = Bind V T R 
+                T = Pat V U
+                U = Atype V
+                V = Str W
+                W = Repr R S T U V (Reprrepr X)
+
+Curious example on lists in Girard et al. Page 91. One of those
+"little imperfections in the syntax"
+
+          List U := ΠX.X→(U→X→X)→X
+             nil := ΛX.λx:X.λy:U→X→X.x
+            cons := λu:U.λt:List U.ΛX.λx:X.λy:U→X→X.y u (t X x y)
+        It w f t := t W w f
+           (u_1) := ΛX.λx:X.λy:U→X→X.y u_1 x
+               W := List V
+               f := λx:U.λy:List W.cons (g x) y
+                  = λx:U.λy:List W.ΛX.λx':X.λy':List W→X→X.y' (g x) (y X x' y')
+
+It nil f (u_1)
+    = (ΛX.λx:X.λy:U→X→X.y u_1 x) (List W) nil λx:U.λy:List W.ΛX.λx':X.λy':List W→X→X.y' (g x) (y X x' y')
+ ---> (λx:List W.λy:U→List W→List W.y u_1 x) nil λx:U.λy:List W.ΛX.λx':X.λy':List W→X→X.y' (g x) (y X x' y')
+ ---> (λy:U→List W→List W.y u_1 nil) λx:U.λy:List W.ΛX.λx':X.λy':List W→X→X.y' (g x) (y X x' y')
+ ---> (λx:U.λy:List W.ΛX.λx':X.λy':List W→X→X.y' (g x) (y X x' y')) u_1 nil
+ ---> (λy:List W.ΛX.λx':X.λy':List W→X→X.y' (g u_1) (y X x' y')) nil
+ ---> ΛX.λx':X.λy':List W→X→X.y' (g u_1) (nil X x' y')
+ ---> ΛX.λx':X.λy':List W→X→X.y' (g u_1) ((ΛX.λx:X.λy:U→X→X.x) X x' y')
+ ---> ΛX.λx':X.λy':List W→X→X.y' (g u_1) ((λx:X.λy:U→X→X.x) x' y')
+ ---> ΛX.λx':X.λy':List W→X→X.y' (g u_1) ((λy:U→X→X.x') y')
+ ---> ΛX.λx':X.λy':List W→X→X.y' (g u_1) x'
+    = (g u_1)
+
+              ΠX.List X := ΠU.ΠX.X→(U→X→X)→X
+                    Nil := ΛX.nil[X]
+                   Cons := ΛX.cons[X]
+
+              ΣX.V := ΠY.(ΠX.(V→Y))→Y
+              〈U,v〉 := ΛY.λx:ΠX.V→Y.x U v
+        (∇X.x.w) t := t X ΛX.λx:V.w
+
+    ΣX.ΠX.ΠY.Y→(X→Y→Y)→Y := ΠY.(ΠX.((ΠX.ΠY.Y→(X→Y→Y)→Y)→Y))→Y
+
+              〈ΠX.List X,Nil (ΠX.List X)〉 := ΛY.λx:ΠX.List U→Y.x (ΠX.List X) (Nil (ΠX.List X))
+        (∇X.x.w) t := t X ΛX.λx:V.w
