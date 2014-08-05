@@ -6,7 +6,7 @@ end
 
 functor ReprPrinter
    (type repr
-    val printer : ('a -> repr -> 'a) -> 'a -> string * repr -> 'a
+    val printer : (repr -> repr -> repr) -> repr -> string * repr -> repr
     structure Induction : Induction
        where type repr = repr
     structure Constructor : Constructor

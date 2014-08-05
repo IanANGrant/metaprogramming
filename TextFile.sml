@@ -5,7 +5,7 @@ struct
           fun iter r =  
               if TextIO.endOfStream istr
               then rev r 
-              else let val s = TextIO.inputLine istr 
+              else let val s = Option.valOf (TextIO.inputLine istr)
                     in iter (s::r) end
       in 
           String.concat (iter []) before

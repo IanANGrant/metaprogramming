@@ -320,6 +320,7 @@ in
 
    val emb_repr_parser = EmbeddedSyntax.repr_parser
    val emb_UTF8 = toString o EmbeddedSyntax.UTF8Printer.print
+   val emb_TeX = toString o EmbeddedSyntax.TeXPrinter.print
 
    fun exp_parser s = Induction.dec_repr_exp
                       Induction.Repr.prt_repr
@@ -505,7 +506,7 @@ val tests = List.map emb_repr_parser ["a","ΠX.Y→X", "a b (c λx:X.x)", "(a b)
 
 val tests'r'UTF8 = List.map emb_UTF8 tests
 
-(* val tests'r'TeX = List.map TeX tests *)
+val tests'r'TeX = List.map emb_TeX tests
 
 val test' = 
    (substest UTF8 "exp" "parallel" "λx:X.(λy:X.x y) y"                    [("ΛX.λy:X.x y x'","y")],

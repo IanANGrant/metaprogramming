@@ -18,16 +18,29 @@ local
 in
    fun compToplevelHere modlist file =
       let val cmd = "Meta.compileToplevel ["^(modsl modlist)^"] \""^file^"\""
-          val _ = print ("\""^cmd^"\"")
+          val _ = print (""^cmd^"")
+          val _ = Meta.orthodox()
       in Meta.compileToplevel modlist file;
          print "\n"
       end
 
+   fun compStructureHere modlist file =
+      let val cmd = "Meta.compileStructure ["^(modsl modlist)^"] \""^file^"\""
+          val _ = print (""^cmd^"")
+          val _ = Meta.orthodox()
+      in Meta.compileStructure modlist file;
+         print "\n"
+      end
+
+   val allhere = true
+
    fun compToplevel modlist file =
-      compile modlist ["orthodox","toplevel"] file
+      if allhere then compToplevelHere modlist file
+                 else compile modlist ["orthodox","toplevel"] file
 
    fun compStructure modlist file =
-      compile modlist ["orthodox","structure"] file
+      if allhere then compStructureHere modlist file
+                 else compile modlist ["orthodox","structure"] file
 
    fun rebuild () =
       let

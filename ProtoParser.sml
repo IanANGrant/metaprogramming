@@ -6,7 +6,8 @@ sig
     val cache : repr Parser.cachet
     val parser : string -> (repr * substring) list
     val parser_ : repr Parser.parser
-    val printer : ('a -> repr -> 'a) -> 'a -> string * repr -> 'a
+    val printer : (repr -> repr -> repr) -> repr -> string * repr -> repr
+ (* val printer : ('a -> repr -> 'a) -> 'a -> string * repr -> 'a *)
 end
 
 functor ProtoParser
@@ -833,7 +834,8 @@ fun reconstructor deconstructor output state =
 
 in
    val cache = cache
-   val printer = Induction.induction deconstructor reconstructor 
+   val printer : (repr -> repr -> repr) -> repr -> string * repr -> repr
+         = Induction.induction deconstructor reconstructor 
    val grammar = grammar
    val start = start
    local val terminalProd = Induction.Repr.rep_str o Induction.Str.fromMLString
